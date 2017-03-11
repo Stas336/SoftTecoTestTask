@@ -1,4 +1,4 @@
-package com.stasl.softtecotesttask;
+package com.stasl.softtecotesttask.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,22 +9,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.stasl.softtecotesttask.R;
+import com.stasl.softtecotesttask.activity.SecondActivity;
+import com.stasl.softtecotesttask.post.PostData;
+import com.stasl.softtecotesttask.post.PostModel;
+
 import java.util.List;
 
 public class PageAdapter extends PagerAdapter
 {
     private Context context;
-    private List<DataObject> dataObjectList;
+    private PostData postData;
     private LayoutInflater layoutInflater;
 
-    public PageAdapter(Context context, List<DataObject> dataObjectList){
+    public PageAdapter(Context context, PostData postData){
         this.context = context;
         this.layoutInflater = (LayoutInflater)this.context.getSystemService(this.context.LAYOUT_INFLATER_SERVICE);
-        this.dataObjectList = dataObjectList;
+        this.postData = postData;
     }
     @Override
     public int getCount() {
-        return dataObjectList.size();
+        return postData.size();
     }
     @Override
     public boolean isViewFromObject(View view, Object object) {
@@ -34,7 +39,7 @@ public class PageAdapter extends PagerAdapter
     public Object instantiateItem(final ViewGroup container, int position)
     {
         View view = this.layoutInflater.inflate(R.layout.two_line_list, container, false);
-        for (int i = 0;i < dataObjectList.get(position).size();i++)
+        for (int i = 0; i < postData.getPOSTS_LIMIT_PER_PAGE(); i++)
         {
             int resID = 0;
             switch (i)
@@ -58,14 +63,23 @@ public class PageAdapter extends PagerAdapter
                     resID = R.id.button6;
                     break;
             }
+            List<PostModel> page = postData.getPage(position);
             final Button button = (Button)view.findViewById(resID);
             button.setVisibility(View.VISIBLE);
-            button.setText(dataObjectList.get(position).getName(i));
+            button.setText(String.valueOf(page.get(i).getId()) + "\n" + page.get(i).getTitle());
+            button.setTag(String.valueOf(page.get(i).getId()));
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(context, SecondActivity.class);
-                    intent.putExtra("name", button.getText().toString());
+                    int userID = -1;
+                    try {
+                        userID = postData.getPost(Integer.parseInt(button.getTag().toString())).getUserId();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    intent.putExtra("userID", String.valueOf(userID));
+                    intent.putExtra("postID", button.getTag().toString());
                     context.startActivity(intent);
                 }
             });

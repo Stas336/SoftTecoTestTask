@@ -1,4 +1,4 @@
-package com.stasl.softtecotesttask;
+package com.stasl.softtecotesttask.user;
 
 public class Address
 {

@@ -1,8 +1,8 @@
-package com.stasl.softtecotesttask;
+package com.stasl.softtecotesttask.user;
 
 public class UserModel
 {
-    private String id;
+    private int id;
 
     private String phone;
 
@@ -18,12 +18,12 @@ public class UserModel
 
     private String name;
 
-    public String getId ()
+    public int getId ()
     {
         return id;
     }
 
-    public void setId (String id)
+    public void setId (int id)
     {
         this.id = id;
     }

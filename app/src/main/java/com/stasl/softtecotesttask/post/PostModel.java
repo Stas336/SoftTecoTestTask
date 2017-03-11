@@ -1,21 +1,21 @@
-package com.stasl.softtecotesttask;
+package com.stasl.softtecotesttask.post;
 
 public class PostModel
 {
-    private String id;
+    private int id;
 
     private String body;
 
     private String title;
 
-    private String userId;
+    private int userId;
 
-    public String getId ()
+    public int getId ()
     {
         return id;
     }
 
-    public void setId (String id)
+    public void setId (int id)
     {
         this.id = id;
     }
@@ -40,12 +40,12 @@ public class PostModel
         this.title = title;
     }
 
-    public String getUserId ()
+    public int getUserId ()
     {
         return userId;
     }
 
-    public void setUserId (String userId)
+    public void setUserId (int userId)
     {
         this.userId = userId;
     }

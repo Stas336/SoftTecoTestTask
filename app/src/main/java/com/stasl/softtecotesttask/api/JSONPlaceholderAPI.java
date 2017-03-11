@@ -1,4 +1,7 @@
-package com.stasl.softtecotesttask;
+package com.stasl.softtecotesttask.api;
+
+import com.stasl.softtecotesttask.post.PostModel;
+import com.stasl.softtecotesttask.user.UserModel;
 
 import java.util.List;
 
