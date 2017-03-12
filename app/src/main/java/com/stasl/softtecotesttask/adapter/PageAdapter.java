@@ -2,12 +2,14 @@ package com.stasl.softtecotesttask.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.stasl.softtecotesttask.R;
 import com.stasl.softtecotesttask.activity.SecondActivity;
@@ -76,7 +78,8 @@ public class PageAdapter extends PagerAdapter
                     try {
                         userID = postData.getPost(Integer.parseInt(button.getTag().toString())).getUserId();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.d("Post click", e.getLocalizedMessage());
+                        Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                     intent.putExtra("userID", String.valueOf(userID));
                     intent.putExtra("postID", button.getTag().toString());

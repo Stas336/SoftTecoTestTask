@@ -1,5 +1,6 @@
 package com.stasl.softtecotesttask.activity;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +32,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import me.relex.circleindicator.CircleIndicator;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     private FloatingActionButton logcatButton;
     private ViewPager list;
     private PostData data;
+    private CircleIndicator indicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,23 +53,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         logcatButton = (FloatingActionButton)findViewById(R.id.logcatButton);
         logcatButton.setOnClickListener(this);
         list = (ViewPager) findViewById(R.id.viewpager);
+        indicator = (CircleIndicator)findViewById(R.id.indicator);
         setImageProportions(3,5);
         startImageAnimation();
-        /*ArrayList<PostData> data = new ArrayList<>();
-        for (int i = 0;i < 5;i++)
-        {
-            ArrayList<String> arrayList = new ArrayList<>();
-            arrayList.add("BMW");
-            arrayList.add("AUDI");
-            arrayList.add("BMW");
-            arrayList.add("AUDI");
-            arrayList.add("BMW");
-            arrayList.add("AUDI");
-            data.add(new PostData(arrayList));
-        }
-        PageAdapter adapter = new PageAdapter(this, data);
-        list.setAdapter(adapter);*/
-        //adapter.registerDataSetObserver(indicator.getDataSetObserver());
         updateViewPager();
     }
     private void setImageProportions(int firstProportion, int secondProportion)
@@ -170,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             try {
                 response = api.getPosts().execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("GetPosts", e.getLocalizedMessage());
             }
             if (response == null)
             {
@@ -191,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             try {
                 response = api.getPost(integers[0]).execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("GetPost", e.getLocalizedMessage());
             }
             if (response == null)
             {
@@ -213,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             try {
                 response = api.getUsers().execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("GetUsers", e.getLocalizedMessage());
             }
             if (response == null)
             {
@@ -234,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             try {
                 response = api.getUser(integers[0]).execute();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d("GetUser", e.getLocalizedMessage());
             }
             if (response == null)
             {
@@ -272,10 +261,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         List<PostModel> posts = null;
         try {
             posts = getPosts();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (ExecutionException | InterruptedException e) {
+            Log.d("ViewPager", e.getLocalizedMessage());
         }
         if (posts != null)
         {
@@ -285,10 +272,17 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             }
             PageAdapter adapter = new PageAdapter(MainActivity.this, data);
             list.setAdapter(adapter);
+            indicator.setViewPager(list);
         }
         else
         {
             Log.d("ViewPager", "Update failure");
+            Snackbar.make(findViewById(android.R.id.content), "Can't get posts from site. Is your internet connection is on?", Snackbar.LENGTH_INDEFINITE).setAction("Retry", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    updateViewPager();
+                }
+            }).setActionTextColor(Color.RED).show();
         }
     }
 }

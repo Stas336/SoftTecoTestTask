@@ -36,8 +36,15 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="115dp"
         android:layout_below="@id/imageView"
         android:scrollbarAlwaysDrawHorizontalTrack="true">
     </android.support.v4.view.ViewPager>
+
+    <me.relex.circleindicator.CircleIndicator
+        android:id="@+id/indicator"
+        android:layout_width="match_parent"
+        android:layout_below="@id/viewpager"
+        android:layout_height="48dp"
+        app:ci_drawable="@color/colorAccent"/>
 </RelativeLayout>

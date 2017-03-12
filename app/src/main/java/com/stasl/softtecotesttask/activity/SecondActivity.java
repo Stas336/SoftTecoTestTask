@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -35,6 +36,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     private DataBase dbHelper;
     private SQLiteDatabase db;
     private UserModel user;
+    private int userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -64,7 +66,8 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         userCity.setOnClickListener(this);
         userCityLabel = (TextView)findViewById(R.id.userCityLabel);
         Intent intent = getIntent();
-        getSupportActionBar().setTitle("Contact #" + intent.getStringExtra("userID"));
+        userID = Integer.parseInt(intent.getStringExtra("userID"));
+        getSupportActionBar().setTitle("Contact #" + userID);
         postIDLabel.setText("Post #");
         userNameLabel.setText("Name");
         userNickNameLabel.setText("NickName");
@@ -73,17 +76,14 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         userPhoneNumberLabel.setText("Phone Number");
         userCityLabel.setText("City");
         postID.setText(intent.getStringExtra("postID"));
-        if (!checkUser(Integer.parseInt(intent.getStringExtra("userID"))))
+        if (!getUserFromDB(userID))
         {
-            user = null;
-            try {
-                user = MainActivity.getUser(Integer.parseInt(intent.getStringExtra("userID")));
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            user = getUserFromSite(userID);
+            if (user == null)
+            {
+                Snackbar.make(findViewById(android.R.id.content), "Can't get user info from site. Is your internet connection is on?", Snackbar.LENGTH_SHORT).setActionTextColor(Color.RED).show();
             }
-            if (user != null)
+            else
             {
                 setUser(user.getName(), user.getUsername(), user.getEmail(), user.getWebsite(), user.getPhone(), user.getAddress().getCity());
                 Snackbar.make(findViewById(android.R.id.content), "Loaded user info from site", Snackbar.LENGTH_SHORT).show();
@@ -98,7 +98,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         {
             case R.id.saveToDBButton:
                 saveUser(user);
-                Snackbar.make(findViewById(android.R.id.content), "Saved user#" + getIntent().getStringExtra("userID") + " into DataBase", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "Saved user# " + getIntent().getStringExtra("userID") + " into DataBase", Snackbar.LENGTH_SHORT).show();
                 break;
             case R.id.userEmail:
                 intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + user.getEmail()));
@@ -113,7 +113,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(intent);
                 break;
             case R.id.userCity:
-                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+ user.getAddress().getGeo().getLat() +","+ user.getAddress().getGeo().getLng()));
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?q=loc:" + user.getAddress().getGeo().getLat() +","+ user.getAddress().getGeo().getLng()));
                 intent.setPackage("com.google.android.apps.maps");
                 startActivity(intent);
                 break;
@@ -152,7 +152,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         long rowID = db.insert("users", null, contentValues);
         Log.d("User saved", "row inserted, ID = " + rowID);
     }
-    private boolean checkUser(int id)
+    private boolean getUserFromDB(int id)
     {
         Cursor c = db.query("users", null, null, null, null, null, null);
         if (c.moveToFirst())
@@ -201,5 +201,15 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         userWebsite.setText(website);
         userPhoneNumber.setText(phone);
         userCity.setText(city);
+    }
+    private UserModel getUserFromSite(int userID)
+    {
+        UserModel user = null;
+        try {
+            user = MainActivity.getUser(userID);
+        } catch (ExecutionException | InterruptedException e) {
+            Log.d("Get user", e.getLocalizedMessage());
+        }
+        return user;
     }
 }
